@@ -40,31 +40,44 @@ export default function App() {
     }, []);
 
     const renderGrid = () => {
-        const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
-        const rows = 4;
-        const columns = 7;
-        const grid = [];
+    const days = ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
+    const timeSlots = [
+      "00:00-04:00",
+      "04:00-08:00",
+      "08:00-12:00",
+      "12:00-16:00",
+      "16:00-20:00",
+      "20:00-24:00",
+    ];
+    const rows = 6;
+    const columns = 7;
+    const grid = [];
 
         // Create the row for day labels
-        const dayLabels = days.map((day, index) => (
-            <View key={index} style={{ flex: 1, alignItems: "center" }}>
-                <Text>{day}</Text>
-            </View>
-        ));
+    const dayLabels = days.map((day, index) => (
+      <View key={index} style={{ flex: 1, alignItems: "center" }}>
+        <Text>{day}</Text>
+      </View>
+    ));
+    const timeLabels = timeSlots.map((timeSlot, index) => (
+      <View key={index} style={{ alignItems: "center", marginTop: 10 }}>
+        <Text>{timeSlot}</Text>
+      </View>
+    ));
 
-        grid.push(
-            <View
-                key="dayLabels"
-                style={{
-                    flexDirection: "row",
-                    borderBottomWidth: 1,
-                    borderColor: "black",
-                    marginTop: 30,
-                }}
-            >
-                {dayLabels}
-            </View>
-        );
+    grid.push(
+      <View
+        key="dayLabels"
+        style={{
+          flexDirection: "row",
+          borderBottomWidth: 1,
+          borderColor: "black",
+          marginTop: 30,
+        }}
+      >
+        {dayLabels}
+      </View>
+    );
 
         // Create the grid of input fields and pickers
         for (let i = 0; i < rows; i++) {
