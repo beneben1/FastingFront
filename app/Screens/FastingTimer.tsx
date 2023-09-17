@@ -2,8 +2,9 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 import { StyleSheet } from 'react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Button, Modal } from 'react-native';
+import { Modal } from 'react-native';
+import { FIREBASE_APP, } from '../../FirebaseConfig';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const FastingTimer = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -16,42 +17,51 @@ const FastingTimer = () => {
     };
     const [countdownDuration, setCountdownDuration] = useState<number>(0);
     const [previewDuration, setPreviewDuration] = useState<number | null>(null);
+    const db = getFirestore(FIREBASE_APP);
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
 
-    // Load selected timing and timer state from AsyncStorage on component mount
+    // Load timer data from Firestore during app initialization
     useEffect(() => {
-        const loadDataFromStorage = async () => {
-            try {
-                const storedTiming = await AsyncStorage.getItem("selectedTiming");
-                const storedCountdownDuration = await AsyncStorage.getItem("countdownDuration");
+        const timerDocRef = doc(db, 'timers', 'user1'); // Reference to the 'user1' document in 'timers' collection
 
-                if (storedTiming) {
-                    setSelectedTiming(storedTiming);
+        getDoc(timerDocRef)
+            .then((docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data) {
+                        setSelectedTiming(data.selectedTiming);
+                        setCountdownDuration(data.countdownDuration || 0); // Ensure the duration is set, default to 0 if not present
+                        setIsTimerRunning(false); // Ensure the timer is not running initially
+                    }
                 }
-                if (storedCountdownDuration) {
-                    setCountdownDuration(parseInt(storedCountdownDuration));
-                    setPreviewDuration(parseInt(storedCountdownDuration));
-                }
-            } catch (error) {
-                console.log("Error loading data from storage:", error);
-            }
-        };
-        loadDataFromStorage();
+            })
+            .catch((error) => {
+                console.error('Error loading timer data:', error);
+            });
     }, []);
 
-
-    // Save selected timing and timer state to AsyncStorage when they change
+    // Save selected timing and timer state to Firestore when they change
     useEffect(() => {
-        AsyncStorage.setItem("selectedTiming", selectedTiming);
-    }, [selectedTiming]);
+        if (selectedTiming || countdownDuration > 0) {
+            const timerDocRef = doc(db, 'timers', 'user1'); // Reference to the 'user1' document in 'timers' collection
+            const data = {
+                selectedTiming,
+                countdownDuration,
+            };
 
-    useEffect(() => {
-        AsyncStorage.setItem("countdownDuration", countdownDuration.toString());
-    }, [countdownDuration]);
-
+            setDoc(timerDocRef, data)
+                .then(() => {
+                    console.log('Timer data saved to Firestore!');
+                })
+                .catch((error) => {
+                    console.error('Error saving timer data:', error);
+                });
+        }
+    }, 
+    [selectedTiming, countdownDuration]);
     useEffect(() => {
         if (selectedTiming) {
             setPreviewDuration(fastingTimings[selectedTiming as keyof typeof fastingTimings]);
@@ -75,7 +85,7 @@ const FastingTimer = () => {
                         setSelectedTiming("");
                         setPreviewDuration(null);
                         setCountdownDuration(0);
-                        AsyncStorage.removeItem("countdownDuration"); // Remove the saved duration
+                        
                     }}
 
                     size={300}
@@ -197,7 +207,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
-        
+
     },
     modalContainer: {
         flex: 1,

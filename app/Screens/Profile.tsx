@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal, TouchableWithoutFeedback } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Block } from "galio-framework";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getDailyCalories, resetDailyCalories } from "./CalorieDataStore";
+import { getDailyCalories, resetDailyCalories } from "./CaloriesCalculator/CalorieDataStore";
 import { useIsFocused } from "@react-navigation/native";
+import Dietplan12 from "./fastinghours/Dietplan12";
+import Dietplan14 from "./fastinghours/Dietplan14";
+import Dietplan16 from "./fastinghours/Dietplan16";
 
 const BMIImage = require("../../assets/body-mass-index.jpg");
 
@@ -20,7 +23,38 @@ const ProfileScreen: React.FC = () => {
     const [selectedFoodItems, setSelectedFoodItems] = useState<{ food: string; calories: number }[]>([]);
     const [userData, setUserData] = useState<any>({ name: "", age: 0, height: 0, weight: 0 });
     const [bmi, setBMI] = useState<number | null>(null);
-    
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedDietPlan, setSelectedDietPlan] = useState(""); // To track the selected diet plan
+
+    const renderModalContent = () => {
+        switch (fastMethod) {
+            case "16-8":
+                return (
+                    <View>
+                        <Dietplan16 />
+                    </View>
+                );
+            case "14-10":
+                return (
+                    <View>
+                        <Dietplan14 />
+                    </View>
+                );
+            case "12-12":
+                return (
+                    <View>
+                        <Dietplan12 />
+                    </View>
+                );
+            default:
+                return null;
+        }
+    };
+
+    const toggleModal = (dietPlan: string) => {
+        setFastMethod(dietPlan);
+        setIsModalVisible(!isModalVisible);
+    };
     useEffect(() => {
         // Calculate BMI
         if (userData.height && userData.weight) {
@@ -29,7 +63,7 @@ const ProfileScreen: React.FC = () => {
             setBMI(bmiValue);
         }
     }, [userData]);
-    
+
     useEffect(() => {
         if (isFocused) {
             (async () => {
@@ -111,10 +145,6 @@ const ProfileScreen: React.FC = () => {
         }
     };
 
-
-
-
-
     useEffect(() => {
         // Fetch and set the daily calorie intake each time the component is rendered
         const fetchDailyCalories = async () => {
@@ -185,7 +215,30 @@ const ProfileScreen: React.FC = () => {
                         >
                             <Text style={styles.resetButtonText}>Reset Daily Calories</Text>
                         </TouchableOpacity>
+                        
+                        <TouchableOpacity
+                            style={styles.dietPlanButton}
+                            onPress={() => toggleModal(fastMethod)}
+                        >
+                            <Text style={styles.dietPlanButtonText}>View Diet Plan</Text>
+                        </TouchableOpacity>
+
+                        {/* Add this modal */}
+                        <Modal
+                            visible={isModalVisible}
+                            transparent={true}
+                            animationType="slide"
+                            onRequestClose={() => setIsModalVisible(false)}
+                        >
+                            <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+                                <View style={styles.modalOverlay} />
+                            </TouchableWithoutFeedback>
+                            <View style={styles.modalContent}>
+                                <ScrollView>{renderModalContent()}</ScrollView>
+                            </View>
+                        </Modal>
                     </View>
+
                 </ScrollView>
                 <ScrollView
                     style={styles.scrollSection}
@@ -350,6 +403,32 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 16,
         fontWeight: "bold",
+    },
+    dietPlanButton: {
+        backgroundColor: "#00bfff",
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 5,
+        marginTop: 16,
+    },
+    dietPlanButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    // Add these modal styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContent: {
+        borderRadius: 10,
+        padding: 16,
+        width: "100%",
+        height:"13%",
+        alignSelf: "center",
     },
 });
 export default ProfileScreen;

@@ -51,23 +51,11 @@ const QuestionsScreen: React.FC = () => {
             try {
                 await AsyncStorage.setItem("userData", JSON.stringify(userData));
                 navigation.navigate("Profile");
+                console.log(userData);
+                
             } catch (error) {
                 console.error("Error saving data to AsyncStorage:", error);
-            }
-            
-    
-            Axios.post("https://fastingback1.onrender.com/profiles", userData)
-                .then((response) => {
-                    // Handle success, e.g., navigate to the next screen
-                    console.log("Data saved:", response.data);
-                        
-                })
-                .catch((error) => {
-                    // Handle error, display an error message
-                    console.error("Error saving data:", error);
-                });
-                
-                
+            }                    
         }
         
     };
