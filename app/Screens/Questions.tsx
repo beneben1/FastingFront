@@ -37,6 +37,7 @@ const QuestionsScreen: React.FC = () => {
             isNaN(weight) ||
             fastingOption === "Choose your preference"
         ) {
+            console.log("Alert triggered");
             setAlertVisible(true);
         } else {
             const userData = {
@@ -50,6 +51,7 @@ const QuestionsScreen: React.FC = () => {
             // Save user data in AsyncStorage
             try {
                 await AsyncStorage.setItem("userData", JSON.stringify(userData));
+                await AsyncStorage.setItem("fastingOption", fastingOption);
                 navigation.navigate("Profile");
                 console.log(userData);
                 
@@ -63,97 +65,103 @@ const QuestionsScreen: React.FC = () => {
     const hideAlert = () => {
         setAlertVisible(false);
     };
+    
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <Text style={styles.header}>Tell us about yourself</Text>
-            <ScrollView style={styles.scrollContainer}>
-                <View style={styles.questionBox}>
-                    <Text style={styles.questionText}>What is your name?</Text>
-                    <TextInput
-                        style={[styles.input, !isNameValid && styles.inputError]}
-                        placeholder="Your name"
-                        value={name}
-                        onChangeText={(text) => setName(text)}
-                    />
-                    {!isNameValid && (
-                        <Text style={styles.validationError}>
-                            Please enter a valid name
-                        </Text>
-                    )}
-                </View>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Text style={styles.header}>Tell us about yourself</Text>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.questionBox}>
+            <Text style={styles.questionText}>What is your name?</Text>
+            <TextInput
+              style={[styles.input, !isNameValid && styles.inputError]}
+              placeholder="Your name"
+              value={name}
+              onChangeText={(text) => setName(text)}
+            />
+            {!isNameValid && (
+              <Text style={styles.validationError}>
+                Please enter a valid name
+              </Text>
+            )}
+          </View>
 
-                <View style={styles.questionBox}>
-                    <Text style={styles.questionText}>How old are you?</Text>
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={0}
-                        maximumValue={100}
-                        step={1}
-                        value={age}
-                        onValueChange={(value) => setAge(value)}
-                    />
-                    <Text style={styles.sliderValue}>{age} years</Text>
-                </View>
+          <View style={styles.questionBox}>
+            <Text style={styles.questionText}>How old are you?</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={100}
+              step={1}
+              value={age}
+              onValueChange={(value) => setAge(value)}
+            />
+            <Text style={styles.sliderValue}>{age} years</Text>
+          </View>
 
-                <View style={styles.questionBox}>
-                    <Text style={styles.questionText}>Select your height:</Text>
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={100}
-                        maximumValue={220}
-                        step={1}
-                        value={height}
-                        onValueChange={(value) => setHeight(value)}
-                    />
-                    <Text style={styles.sliderValue}>{height.toFixed(0)} cm</Text>
-                </View>
+          <View style={styles.questionBox}>
+            <Text style={styles.questionText}>Select your height:</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={100}
+              maximumValue={220}
+              step={1}
+              value={height}
+              onValueChange={(value) => setHeight(value)}
+            />
+            <Text style={styles.sliderValue}>{height.toFixed(0)} cm</Text>
+          </View>
 
-                <View style={styles.questionBox}>
-                    <Text style={styles.questionText}>What is your weight:</Text>
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={40}
-                        maximumValue={150}
-                        step={1}
-                        value={weight}
-                        onValueChange={(value) => setWeight(value)}
-                    />
-                    <Text style={styles.sliderValue}>{weight.toFixed(0)} kg</Text>
-                </View>
+          <View style={styles.questionBox}>
+            <Text style={styles.questionText}>What is your weight:</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={40}
+              maximumValue={150}
+              step={1}
+              value={weight}
+              onValueChange={(value) => setWeight(value)}
+            />
+            <Text style={styles.sliderValue}>{weight.toFixed(0)} kg</Text>
+          </View>
 
-
-                <View style={styles.questionBox}>
-                    <Text style={styles.questionText}>
-                        Choose your fasting time preference:
-                    </Text>
-                    <ScrollView>
-                    <Picker
-                        selectedValue={fastingOption}
-                        style={styles.picker}
-                        onValueChange={(itemValue) => setFastingOption(itemValue)}
-                    >
-                        <Picker.Item label="16-8" value="16-8" />
-                        <Picker.Item label="14-10" value="14-10" />
-                        <Picker.Item label="12-12" value="12-12" />
-                    </Picker>
-                    </ScrollView>
-                </View>
-
-                <Button title="Submit" onPress={handleSubmit} />
+          <View style={styles.questionBox}>
+            <Text style={styles.questionText}>
+              Choose your fasting time preference:
+            </Text>
+            <ScrollView>
+              <Picker
+                selectedValue={fastingOption}
+                style={styles.picker}
+                onValueChange={(itemValue) => setFastingOption(itemValue)}
+              >
+                <Picker.Item
+                  label="Choose your preference"
+                  value="Choose your preference"
+                />
+                <Picker.Item label="16-8" value="16-8" />
+                <Picker.Item label="14-10" value="14-10" />
+                <Picker.Item label="12-12" value="12-12" />
+              </Picker>
             </ScrollView>
-            <Modal isVisible={isAlertVisible} backdropOpacity={0.5}>
-                <View style={styles.alertContainer}>
-                    <Text style={styles.alertText}>Please fill in all the answers.</Text>
-                    <TouchableOpacity style={styles.okButton} onPress={hideAlert}>
-                        <Text style={styles.okButtonText}>OK</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        </KeyboardAvoidingView>
+          </View>
+
+          <Button title="Submit" onPress={handleSubmit} />
+        </ScrollView>
+        <Modal isVisible={isAlertVisible} backdropOpacity={0.5}>
+          <View style={styles.alertContainer}>
+            <Text style={styles.alertText}>
+              Please fill in all the answers.
+            </Text>
+            <TouchableOpacity style={styles.okButton} onPress={hideAlert}>
+              <Text style={styles.okButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </KeyboardAvoidingView>
     );
 };
 
@@ -211,9 +219,9 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
     picker: {
-        top:-80,
+        marginTop: 3,
         borderColor: "#CCC",
-        height: 50,
+        
         
     },
     alertContainer: {

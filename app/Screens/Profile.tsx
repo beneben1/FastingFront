@@ -9,52 +9,45 @@ import { useIsFocused } from "@react-navigation/native";
 import Dietplan12 from "./fastinghours/Dietplan12";
 import Dietplan14 from "./fastinghours/Dietplan14";
 import Dietplan16 from "./fastinghours/Dietplan16";
+import { useNavigation } from "@react-navigation/native";
+
 
 const BMIImage = require("../../assets/body-mass-index.jpg");
 
 const ProfileScreen: React.FC = () => {
+    const navigation = useNavigation() as any;
+
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
-    const [fastMethod, setFastMethod] = useState('16-8');
+    const [fastMethod, setFastMethod] = useState('');
     const [dailyCalories, setDailyCalories] = useState(0);
     const [key, setKey] = useState(Date.now());
     const isFocused = useIsFocused();
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [selectedFoodItems, setSelectedFoodItems] = useState<{ food: string; calories: number }[]>([]);
-    const [userData, setUserData] = useState<any>({ name: "", age: 0, height: 0, weight: 0 });
+    const [userData, setUserData] = useState<any>({ name: "", age: 0, height: 0, weight: 0, });
     const [bmi, setBMI] = useState<number | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedDietPlan, setSelectedDietPlan] = useState(""); // To track the selected diet plan
 
-    const renderModalContent = () => {
-        switch (fastMethod) {
-            case "16-8":
-                return (
-                    <View>
-                        <Dietplan16 />
-                    </View>
-                );
-            case "14-10":
-                return (
-                    <View>
-                        <Dietplan14 />
-                    </View>
-                );
-            case "12-12":
-                return (
-                    <View>
-                        <Dietplan12 />
-                    </View>
-                );
-            default:
-                return null;
-        }
+    const handleFastingChoicePress = () => {
+      switch (fastMethod) {
+        case "16-8":
+          navigation.navigate("Diet plan(16-8)");
+          break;
+        case "14-10":
+          navigation.navigate("Diet plan(14-10)");
+          break;
+        case "12-12":
+          navigation.navigate("Diet plan(12-12)");
+          break;
+        default:
+          // Handle default case if needed
+          break;
+      }
     };
 
-    const toggleModal = (dietPlan: string) => {
-        setFastMethod(dietPlan);
-        setIsModalVisible(!isModalVisible);
-    };
+    
     useEffect(() => {
         // Calculate BMI
         if (userData.height && userData.weight) {
@@ -106,23 +99,37 @@ const ProfileScreen: React.FC = () => {
     };
 
     useEffect(() => {
-        (async () => {
-            const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            setHasCameraPermission(status === "granted");
-            loadSavedImages(); // Load saved images when component mounts
+      (async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        setHasCameraPermission(status === "granted");
+        loadSavedImages(); // Load saved images when component mounts
 
-            // Load user data from AsyncStorage
-            try {
-                const userDataJson = await AsyncStorage.getItem("userData");
-                if (userDataJson) {
-                    const parsedUserData = JSON.parse(userDataJson);
-                    setUserData(parsedUserData);
-                }
-            } catch (error) {
-                console.log("Error loading user data from AsyncStorage:", error);
-            }
-        })();
+        // Load user data from AsyncStorage
+        try {
+          const userDataJson = await AsyncStorage.getItem("userData");
+          if (userDataJson) {
+            const parsedUserData = JSON.parse(userDataJson);
+            setUserData(parsedUserData);
+          }
+        } catch (error) {
+          console.log("Error loading user data from AsyncStorage:", error);
+        }
+
+        // Load fasting method from AsyncStorage
+        try {
+          const fastingMethod = await AsyncStorage.getItem("fastingOption");
+          if (fastingMethod) {
+            setFastMethod(fastingMethod);
+          }
+        } catch (error) {
+          console.error(
+            "Error loading fasting method from AsyncStorage:",
+            error
+          );
+        }
+      })();
     }, [isFocused]);
+
 
     const handleTakePhoto = async () => {
         const result = await ImagePicker.launchCameraAsync({
@@ -161,95 +168,87 @@ const ProfileScreen: React.FC = () => {
 
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.topSection}>
-                <TouchableOpacity onPress={handleChooseImage}>
-                    <Block style={styles.imageContainer}>
-                        {/* Display selected image or default icon */}
-                        {selectedImages.length > 0 ? (
-                            selectedImages.map((imageUri, index) => (
-                                <Image
-                                    key={index}
-                                    source={{ uri: imageUri }}
-                                    style={styles.squareImage}
-                                />
-                            ))
-                        ) : (
-                            <Text>Select Image</Text>
-                        )}
-                    </Block>
-                </TouchableOpacity>
-                <View style={styles.photoOptions}>
-                    <View style={styles.iconBackground}>
-                        <TouchableOpacity onPress={handleChooseImage}>
-                            <MaterialIcons name="photo-library" size={30} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.iconBackground}>
-                        <TouchableOpacity onPress={handleTakePhoto}>
-                            <MaterialIcons name="photo-camera" size={30} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                <ScrollView style={styles.middleSection} contentContainerStyle={styles.middleContent}>
-                    <View style={styles.detailsSection}>
-                        <Text style={styles.welcomeText}>Welcome, {userData.name}!</Text>
-                        <Text style={styles.userDetail}>Age: {userData.age} years</Text>
-                        <Text style={styles.userDetail}>Height: {userData.height} cm</Text>
-                        <Text style={styles.userDetail}>Weight: {userData.weight} kg</Text>
-                        {bmi !== null && (
-                            <View style={styles.bmiSection}>
-                                <Text style={styles.bmiText}>Your BMI is: {bmi.toFixed(2)}</Text>
-                                {BMIImage && <Image source={BMIImage} style={styles.bmiImage} />}
-                            </View>
-                        )}
-                    </View>
-
-                    <View style={styles.calorieContainer}>
-                        <Text style={styles.calorieText}>Daily Calorie Intake:</Text>
-                        <Text style={styles.calorieValue}>{dailyCalories}</Text>
-                        <TouchableOpacity
-                            style={styles.resetButton}
-                            onPress={handleResetDailyCalories}
-                        >
-                            <Text style={styles.resetButtonText}>Reset Daily Calories</Text>
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity
-                            style={styles.dietPlanButton}
-                            onPress={() => toggleModal(fastMethod)}
-                        >
-                            <Text style={styles.dietPlanButtonText}>View Diet Plan</Text>
-                        </TouchableOpacity>
-
-                        {/* Add this modal */}
-                        <Modal
-                            visible={isModalVisible}
-                            transparent={true}
-                            animationType="slide"
-                            onRequestClose={() => setIsModalVisible(false)}
-                        >
-                            <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-                                <View style={styles.modalOverlay} />
-                            </TouchableWithoutFeedback>
-                            <View style={styles.modalContent}>
-                                <ScrollView>{renderModalContent()}</ScrollView>
-                            </View>
-                        </Modal>
-                    </View>
-
-                </ScrollView>
-                <ScrollView
-                    style={styles.scrollSection}
-                    contentContainerStyle={styles.scrollContent}
-                >
-                    <View style={styles.emptySection}>
-                        {/* ... (content for generated recipes) */}
-                    </View>
-                </ScrollView>
+      <ScrollView style={styles.container}>
+        <View style={styles.topSection}>
+          <TouchableOpacity onPress={handleChooseImage}>
+            <Block style={styles.imageContainer}>
+              {/* Display selected image or default icon */}
+              {selectedImages.length > 0 ? (
+                selectedImages.map((imageUri, index) => (
+                  <Image
+                    key={index}
+                    source={{ uri: imageUri }}
+                    style={styles.squareImage}
+                  />
+                ))
+              ) : (
+                <Text>Select Image</Text>
+              )}
+            </Block>
+          </TouchableOpacity>
+          <View style={styles.photoOptions}>
+            <View style={styles.iconBackground}>
+              <TouchableOpacity onPress={handleChooseImage}>
+                <MaterialIcons name="photo-library" size={30} color="black" />
+              </TouchableOpacity>
             </View>
-        </ScrollView>
+            <View style={styles.iconBackground}>
+              <TouchableOpacity onPress={handleTakePhoto}>
+                <MaterialIcons name="photo-camera" size={30} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <ScrollView
+            style={styles.middleSection}
+            contentContainerStyle={styles.middleContent}
+          >
+            <View style={styles.detailsSection}>
+              <Text style={styles.welcomeText}>Welcome, {userData.name}!</Text>
+              <Text style={styles.userDetail}>Age: {userData.age} years</Text>
+              <Text style={styles.userDetail}>
+                Height: {userData.height} cm
+              </Text>
+              <Text style={styles.userDetail}>
+                Weight: {userData.weight} kg
+              </Text>
+              <TouchableOpacity onPress={handleFastingChoicePress}>
+                <Text style={styles.userDetail}>
+                  Fasting choice: {fastMethod}
+                </Text>
+              </TouchableOpacity>
+
+              {bmi !== null && (
+                <View style={styles.bmiSection}>
+                  <Text style={styles.bmiText}>
+                    Your BMI is: {bmi.toFixed(2)}
+                  </Text>
+                  {BMIImage && (
+                    <Image source={BMIImage} style={styles.bmiImage} />
+                  )}
+                </View>
+              )}
+            </View>
+
+            <View style={styles.calorieContainer}>
+              <Text style={styles.calorieText}>Daily Calorie Intake:</Text>
+              <Text style={styles.calorieValue}>{dailyCalories}</Text>
+              <TouchableOpacity
+                style={styles.resetButton}
+                onPress={handleResetDailyCalories}
+              >
+                <Text style={styles.resetButtonText}>Reset Daily Calories</Text>
+              </TouchableOpacity>
+
+            </View>
+          </ScrollView>
+          <ScrollView
+            style={styles.scrollSection}
+            contentContainerStyle={styles.scrollContent}
+          >
+          </ScrollView>
+        </View>
+      </ScrollView>
     );
 };
 
@@ -397,38 +396,13 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 5,
-        top: 9
+        top: 9,
+        marginBottom: 10,
     },
     resetButtonText: {
         color: "white",
         fontSize: 16,
         fontWeight: "bold",
-    },
-    dietPlanButton: {
-        backgroundColor: "#00bfff",
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 5,
-        marginTop: 16,
-    },
-    dietPlanButtonText: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: "bold",
-    },
-    // Add these modal styles
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    modalContent: {
-        borderRadius: 10,
-        padding: 16,
-        width: "100%",
-        height:"13%",
-        alignSelf: "center",
     },
 });
 export default ProfileScreen;

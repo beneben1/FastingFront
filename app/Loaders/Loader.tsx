@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import {
-    Text,
+
     View,
     StyleSheet,
-    Animated,
-    Easing,
-    TouchableOpacity,
 } from "react-native";
 import BouncingPreloader from 'react-native-bouncing-preloader';
 

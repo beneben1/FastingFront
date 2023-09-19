@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Login from './app/Screens/AUTHscreens/Login';
-import Questions from './app/Screens/Questions';
-import SignUp from './app/Screens/AUTHscreens/SignUp';
-import HomeTabs from './app/Screens/HomeTabs';
+import React, { useEffect, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { User, getAuth, onAuthStateChanged } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Login from "./app/Screens/AUTHscreens/Login";
+import Questions from "./app/Screens/Questions";
+import SignUp from "./app/Screens/AUTHscreens/SignUp";
+import HomeTabs from "./app/Screens/Navigation/HomeTabs";
+import Dietplan12 from "./app/Screens/fastinghours/Dietplan12";
+import Dietplan14 from "./app/Screens/fastinghours/Dietplan14";
+import Dietplan16 from "./app/Screens/fastinghours/Dietplan16";
 const Stack = createNativeStackNavigator();
 const auth = getAuth();
-
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,17 +22,9 @@ export default function App() {
       setIsLoading(false);
     }, 2000);
 
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      if (authUser && authUser.email) {
-        console.log(authUser.email);
-        AsyncStorage.setItem('userMail', authUser.email)
-          .then(() => {
-            console.log('User email saved in AsyncStorage');
-          })
-          .catch((error) => {
-            console.error('Error saving user email to AsyncStorage:', error);
-          });
-        setUser(authUser);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
       } else {
         setUser(null);
       }
@@ -52,7 +46,22 @@ export default function App() {
             <Stack.Screen
               name="Questions"
               component={Questions}
-              options={{ title: 'Questions', headerShown: false }}
+              options={{ title: "Questions", headerShown: false }}
+            />
+            <Stack.Screen
+              name="Diet plan(12-12)"
+              component={Dietplan12}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Diet plan(14-10)"
+              component={Dietplan14}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Diet plan(16-8)"
+              component={Dietplan16}
+              options={{ headerShown: false }}
             />
           </>
         ) : (

@@ -8,6 +8,7 @@ import { Picker } from '@react-native-picker/picker';
 import Loader from "../../Loaders/Loader";
 import { addCalories } from "./CalorieDataStore";
 
+
 export interface Food {
     Category: string;
     Food: string;
@@ -59,18 +60,19 @@ const CalorieCalculator = () => {
 
 
     useEffect(() => {
-        const fetchData = async () => {
-            const querySnapshot = await getDocs(foodCollection);
+      const fetchData = async () => {
+        const querySnapshot = await getDocs(foodCollection);
 
-            if (!querySnapshot.empty) {
-                const data = querySnapshot.docs.map((doc) => doc.data() as Food);
-                setFoodData(data);
-                setloader(false)
-            }
-        };
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs.map((doc) => doc.data() as Food);
+          console.log(data);
+          setFoodData(data);
+        }
+        setloader(false);
+      };
 
-        fetchData();
-    }, []);
+      fetchData();
+    }, [foodCollection]);
 
     const filteredData = foodData
         .filter((item) =>

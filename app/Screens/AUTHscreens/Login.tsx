@@ -11,10 +11,11 @@ import {
 import React, { useState } from "react";
 import { FIREBASE_AUTH } from "../../../FirebaseConfig";
 import {
-    signInWithEmailAndPassword,
-    sendPasswordResetEmail,
-    GoogleAuthProvider,
-    signInWithCredential,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithCredential,
+  initializeAuth,
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 
@@ -28,17 +29,25 @@ const Login = () => {
     const auth = FIREBASE_AUTH;
 
     const signIn = async () => {
-        setLoading(true);
-        try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
-            console.log(response);
-        } catch (error: any) {
-            console.log(error);
-            alert("Sign In failed: " + "Username or password is incorrect");
-        } finally {
-            setLoading(false);
-        }
+      setLoading(true);
+      try {
+        const response = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log(response);
+
+        // Navigate to the Home screen
+        navigation.navigate("HomeTabs");
+      } catch (error: any) {
+        console.log(error);
+        alert("Sign In failed: " + "Username or password is incorrect");
+      } finally {
+        setLoading(false);
+      }
     };
+
 
     // Function to send a password reset email
     const resetPassword = async (email: string) => {

@@ -24,14 +24,14 @@ const Recipes = () => {
     useEffect(() => {
         // Fetch recipes from your Django API
         axios
-            .get('https://fastingback1.onrender.com/recipes/')
-            .then((response) => {
-                // Update the recipes state with the fetched data
-                setRecipes(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching recipes:', error);
-            });
+          .get("https://fastingapp-back.onrender.com/recipes/")
+          .then((response) => {
+            // Update the recipes state with the fetched data
+            setRecipes(response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching recipes:", error);
+          });
     }, []);
 
     const openRecipeDetail = (recipe: Recipe) => {

@@ -85,7 +85,7 @@ const FastingTimer = () => {
                         setSelectedTiming("");
                         setPreviewDuration(null);
                         setCountdownDuration(0);
-                        
+                        alert("Timer has ended!")
                     }}
 
                     size={300}
