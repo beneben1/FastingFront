@@ -3,25 +3,21 @@ import {
     Text,
     StyleSheet,
     TextInput,
-    ActivityIndicator,
-    Button,
-    KeyboardAvoidingView,
     TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
 import { FIREBASE_AUTH } from "../../../FirebaseConfig";
 import {
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  signInWithCredential,
-  initializeAuth,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
+import { Image } from 'react-native';
+
+const Logo = require('../../../assets/fastingproslogo.png');
 
 const Login = () => {
     const navigation = useNavigation() as any;
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -29,26 +25,17 @@ const Login = () => {
     const auth = FIREBASE_AUTH;
 
     const signIn = async () => {
-      setLoading(true);
-      try {
-        const response = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        console.log(response);
-
-        // Navigate to the Home screen
-        navigation.navigate("HomeTabs");
-      } catch (error: any) {
-        console.log(error);
-        alert("Sign In failed: " + "Username or password is incorrect");
-      } finally {
-        setLoading(false);
-      }
+        setLoading(true);
+        try {
+            const response = await signInWithEmailAndPassword(auth, email, password);
+            console.log(response);
+        } catch (error: any) {
+            console.log(error);
+            alert("Sign In failed: " + "Username or password is incorrect");
+        } finally {
+            setLoading(false);
+        }
     };
-
-
     // Function to send a password reset email
     const resetPassword = async (email: string) => {
         try {
@@ -60,18 +47,22 @@ const Login = () => {
         }
     };
 
-
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.subtitle}>Sign in to continue!</Text>
+            <View >
+                <Image
+                    source={Logo}
+                    style={{ width: 400, height: 250 ,marginTop:10 }}
+                    resizeMode="contain" // or "cover" based on your design
+                />
+            </View>
+            <Text style={styles.title}>Login</Text>
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
                     value={email}
                     onChangeText={(text) => setEmail(text)}
-                    placeholder="Email ID"
+                    placeholder="Email"
                 />
                 <TextInput
                     secureTextEntry={!showPassword}
@@ -79,9 +70,7 @@ const Login = () => {
                     value={password}
                     placeholder="Password"
                     onChangeText={(text) => setPassword(text)}
-
                 />
-
                 <TouchableOpacity
                     style={styles.forgotPassword}
                     onPress={() => resetPassword(email)}
@@ -105,16 +94,18 @@ const Login = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#e0ffff",
         paddingTop: 50,
-        paddingHorizontal: 16,
+        paddingHorizontal: 30,
         alignItems: "center",
+        backgroundColor: "#fff",
     },
     title: {
-        fontSize: 28,
+        fontSize: 27,
         fontWeight: "600",
-        marginBottom: 8,
+        marginBottom: 20,
         color: "#333",
+        fontStyle:'italic'
+
     },
     subtitle: {
         fontSize: 16,
@@ -126,10 +117,13 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     input: {
-        backgroundColor: "#fff",
-        padding: 12,
+        backgroundColor: "lightgrey",
+        padding: 25,
         borderRadius: 4,
         marginBottom: 16,
+        fontStyle: "italic",
+        fontWeight: 'bold',
+        
     },
     forgotPassword: {
         alignSelf: "flex-end",
@@ -138,10 +132,11 @@ const styles = StyleSheet.create({
         color: "black",
     },
     signInButton: {
-        backgroundColor: "#006400",
+        backgroundColor: "lightskyblue",
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
+        marginBottom: 16,
     },
     signInButtonText: {
         color: "#FFF",
@@ -153,11 +148,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     signUpText: {
-        fontSize: 14,
+        fontSize: 16,
         color: "#333",
     },
     signUpLink: {
-        color: "#006400",
+        color: "lightskyblue",
         fontWeight: "bold",
     },
     googleSignInButton: {

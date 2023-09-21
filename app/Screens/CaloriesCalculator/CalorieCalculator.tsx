@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity, Modal } from "react-native";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import { collection, getDocs } from "firebase/firestore";
 import { FIREBASE_DB } from "../../../FirebaseConfig";
-import { Button, TextInput } from "react-native-paper";
+import { TextInput } from "react-native-paper";
 import { Platform } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 import Loader from "../../Loaders/Loader";
 import { addCalories } from "./CalorieDataStore";
-
 
 export interface Food {
     Category: string;
@@ -39,8 +38,8 @@ const categories = [
     'Desserts, sweets',
     'Seeds and Nuts',
     'Drinks,Alcohol, Beverages'
-
 ];
+
 const CalorieCalculator = () => {
     const foodCollection = collection(FIREBASE_DB, "nutrients_csvfile");
     const [foodData, setFoodData] = useState<Food[]>([]);
@@ -58,21 +57,19 @@ const CalorieCalculator = () => {
         }
     };
 
-
     useEffect(() => {
-      const fetchData = async () => {
-        const querySnapshot = await getDocs(foodCollection);
+        const fetchData = async () => {
+            const querySnapshot = await getDocs(foodCollection);
 
-        if (!querySnapshot.empty) {
-          const data = querySnapshot.docs.map((doc) => doc.data() as Food);
-          console.log(data);
-          setFoodData(data);
-        }
-        setloader(false);
-      };
+            if (!querySnapshot.empty) {
+                const data = querySnapshot.docs.map((doc) => doc.data() as Food);
+                setFoodData(data);
+                setloader(false)
+            }
+        };
 
-      fetchData();
-    }, [foodCollection]);
+        fetchData();
+    }, []);
 
     const filteredData = foodData
         .filter((item) =>
@@ -94,12 +91,6 @@ const CalorieCalculator = () => {
         setModalVisible(false);
     };
 
-    const filteredFoodData = foodData.filter((item) =>
-        item.Food.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const sortedFoodData = filteredFoodData.sort((a, b) =>
-        a.Food.localeCompare(b.Food)
-    );
     const handleAddToDailyCalories = () => {
         if (selectedFood && servingSize > 0) {
             const caloriesToAdd = (selectedFood.Calories * servingSize) / selectedFood.Grams;
@@ -193,7 +184,6 @@ const CalorieCalculator = () => {
 
                 </View>
             </Modal>
-
         </View >
     );
 };
@@ -208,12 +198,15 @@ const styles = StyleSheet.create({
     },
     searchBar: {
         marginBottom: 8,
+        fontStyle: "italic",
+        fontWeight: 'bold',
+        backgroundColor: "lightgrey",
     },
     searchContainer: {
         marginBottom: 16,
     },
     picker: {
-        height: 50,
+        height: 30,
         backgroundColor: "#f0f0f0",
         borderRadius: 5,
         paddingHorizontal: 10,
@@ -223,11 +216,13 @@ const styles = StyleSheet.create({
     },
     headerRow: {
         flexDirection: "row",
-        backgroundColor: "#f0f0f0",
         paddingVertical: 8,
         marginVertical: 1,
         borderBottomWidth: 1,
         borderColor: "#ccc",
+        fontStyle: "italic",
+        fontWeight: 'bold',
+        backgroundColor: "lightblue",
     },
     headerText: {
         flex: 1,
@@ -236,6 +231,7 @@ const styles = StyleSheet.create({
         textTransform: "uppercase",
         fontWeight: "bold",
         textAlign: "center",
+        
     },
     dataRow: {
         flexDirection: "row",
@@ -294,7 +290,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         fontSize: 16,
     },
-
     addToCaloriesButton: {
         backgroundColor: "#007bff",
         paddingVertical: 12,
@@ -303,7 +298,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 10,
     },
-
     buttonText: {
         color: "white",
         fontSize: 16,

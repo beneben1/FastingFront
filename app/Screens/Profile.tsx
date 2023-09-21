@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal, TouchableWithoutFeedback } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Block } from "galio-framework";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDailyCalories, resetDailyCalories } from "./CaloriesCalculator/CalorieDataStore";
 import { useIsFocused } from "@react-navigation/native";
-import Dietplan12 from "./fastinghours/Dietplan12";
-import Dietplan14 from "./fastinghours/Dietplan14";
-import Dietplan16 from "./fastinghours/Dietplan16";
 import { useNavigation } from "@react-navigation/native";
 
 
@@ -31,23 +28,23 @@ const ProfileScreen: React.FC = () => {
     const [selectedDietPlan, setSelectedDietPlan] = useState(""); // To track the selected diet plan
 
     const handleFastingChoicePress = () => {
-      switch (fastMethod) {
-        case "16-8":
-          navigation.navigate("Diet plan(16-8)");
-          break;
-        case "14-10":
-          navigation.navigate("Diet plan(14-10)");
-          break;
-        case "12-12":
-          navigation.navigate("Diet plan(12-12)");
-          break;
-        default:
-          // Handle default case if needed
-          break;
-      }
+        switch (fastMethod) {
+            case "16-8":
+                navigation.navigate("Diet plan(16-8)");
+                break;
+            case "14-10":
+                navigation.navigate("Diet plan(14-10)");
+                break;
+            case "12-12":
+                navigation.navigate("Diet plan(12-12)");
+                break;
+            default:
+                // Handle default case if needed
+                break;
+        }
     };
 
-    
+
     useEffect(() => {
         // Calculate BMI
         if (userData.height && userData.weight) {
@@ -99,35 +96,35 @@ const ProfileScreen: React.FC = () => {
     };
 
     useEffect(() => {
-      (async () => {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        setHasCameraPermission(status === "granted");
-        loadSavedImages(); // Load saved images when component mounts
+        (async () => {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync();
+            setHasCameraPermission(status === "granted");
+            loadSavedImages(); // Load saved images when component mounts
 
-        // Load user data from AsyncStorage
-        try {
-          const userDataJson = await AsyncStorage.getItem("userData");
-          if (userDataJson) {
-            const parsedUserData = JSON.parse(userDataJson);
-            setUserData(parsedUserData);
-          }
-        } catch (error) {
-          console.log("Error loading user data from AsyncStorage:", error);
-        }
+            // Load user data from AsyncStorage
+            try {
+                const userDataJson = await AsyncStorage.getItem("userData");
+                if (userDataJson) {
+                    const parsedUserData = JSON.parse(userDataJson);
+                    setUserData(parsedUserData);
+                }
+            } catch (error) {
+                console.log("Error loading user data from AsyncStorage:", error);
+            }
 
-        // Load fasting method from AsyncStorage
-        try {
-          const fastingMethod = await AsyncStorage.getItem("fastingOption");
-          if (fastingMethod) {
-            setFastMethod(fastingMethod);
-          }
-        } catch (error) {
-          console.error(
-            "Error loading fasting method from AsyncStorage:",
-            error
-          );
-        }
-      })();
+            // Load fasting method from AsyncStorage
+            try {
+                const fastingMethod = await AsyncStorage.getItem("fastingOption");
+                if (fastingMethod) {
+                    setFastMethod(fastingMethod);
+                }
+            } catch (error) {
+                console.error(
+                    "Error loading fasting method from AsyncStorage:",
+                    error
+                );
+            }
+        })();
     }, [isFocused]);
 
 
@@ -168,87 +165,87 @@ const ProfileScreen: React.FC = () => {
 
 
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.topSection}>
-          <TouchableOpacity onPress={handleChooseImage}>
-            <Block style={styles.imageContainer}>
-              {/* Display selected image or default icon */}
-              {selectedImages.length > 0 ? (
-                selectedImages.map((imageUri, index) => (
-                  <Image
-                    key={index}
-                    source={{ uri: imageUri }}
-                    style={styles.squareImage}
-                  />
-                ))
-              ) : (
-                <Text>Select Image</Text>
-              )}
-            </Block>
-          </TouchableOpacity>
-          <View style={styles.photoOptions}>
-            <View style={styles.iconBackground}>
-              <TouchableOpacity onPress={handleChooseImage}>
-                <MaterialIcons name="photo-library" size={30} color="black" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.iconBackground}>
-              <TouchableOpacity onPress={handleTakePhoto}>
-                <MaterialIcons name="photo-camera" size={30} color="black" />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <ScrollView
-            style={styles.middleSection}
-            contentContainerStyle={styles.middleContent}
-          >
-            <View style={styles.detailsSection}>
-              <Text style={styles.welcomeText}>Welcome, {userData.name}!</Text>
-              <Text style={styles.userDetail}>Age: {userData.age} years</Text>
-              <Text style={styles.userDetail}>
-                Height: {userData.height} cm
-              </Text>
-              <Text style={styles.userDetail}>
-                Weight: {userData.weight} kg
-              </Text>
-              <TouchableOpacity onPress={handleFastingChoicePress}>
-                <Text style={styles.userDetail}>
-                  Fasting choice: {fastMethod}
-                </Text>
-              </TouchableOpacity>
-
-              {bmi !== null && (
-                <View style={styles.bmiSection}>
-                  <Text style={styles.bmiText}>
-                    Your BMI is: {bmi.toFixed(2)}
-                  </Text>
-                  {BMIImage && (
-                    <Image source={BMIImage} style={styles.bmiImage} />
-                  )}
+        <ScrollView style={styles.container}>
+            <View style={styles.topSection}>
+                <TouchableOpacity onPress={handleChooseImage}>
+                    <Block style={styles.imageContainer}>
+                        {/* Display selected image or default icon */}
+                        {selectedImages.length > 0 ? (
+                            selectedImages.map((imageUri, index) => (
+                                <Image
+                                    key={index}
+                                    source={{ uri: imageUri }}
+                                    style={styles.squareImage}
+                                />
+                            ))
+                        ) : (
+                            <Text>Select Image</Text>
+                        )}
+                    </Block>
+                </TouchableOpacity>
+                <View style={styles.photoOptions}>
+                    <View style={styles.iconBackground}>
+                        <TouchableOpacity onPress={handleChooseImage}>
+                            <MaterialIcons name="photo-library" size={30} color="black" />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.iconBackground}>
+                        <TouchableOpacity onPress={handleTakePhoto}>
+                            <MaterialIcons name="photo-camera" size={30} color="black" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-              )}
-            </View>
 
-            <View style={styles.calorieContainer}>
-              <Text style={styles.calorieText}>Daily Calorie Intake:</Text>
-              <Text style={styles.calorieValue}>{dailyCalories}</Text>
-              <TouchableOpacity
-                style={styles.resetButton}
-                onPress={handleResetDailyCalories}
-              >
-                <Text style={styles.resetButtonText}>Reset Daily Calories</Text>
-              </TouchableOpacity>
+                <ScrollView
+                    style={styles.middleSection}
+                    contentContainerStyle={styles.middleContent}
+                >
+                    <View style={styles.detailsSection}>
+                        <Text style={styles.welcomeText}>Welcome, {userData.name}!</Text>
+                        <Text style={styles.userDetail}>Age: {userData.age} years</Text>
+                        <Text style={styles.userDetail}>
+                            Height: {userData.height} cm
+                        </Text>
+                        <Text style={styles.userDetail}>
+                            Weight: {userData.weight} kg
+                        </Text>
+                        <TouchableOpacity onPress={handleFastingChoicePress}>
+                            <Text style={styles.userDetail}>
+                                Fasting choice: {fastMethod}
+                            </Text>
+                        </TouchableOpacity>
 
+                        {bmi !== null && (
+                            <View style={styles.bmiSection}>
+                                <Text style={styles.bmiText}>
+                                    Your BMI is: {bmi.toFixed(2)}
+                                </Text>
+                                {BMIImage && (
+                                    <Image source={BMIImage} style={styles.bmiImage} />
+                                )}
+                            </View>
+                        )}
+                    </View>
+
+                    <View style={styles.calorieContainer}>
+                        <Text style={styles.calorieText}>Daily Calorie Intake:</Text>
+                        <Text style={styles.calorieValue}>{dailyCalories}</Text>
+                        <TouchableOpacity
+                            style={styles.resetButton}
+                            onPress={handleResetDailyCalories}
+                        >
+                            <Text style={styles.resetButtonText}>Reset Daily Calories</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </ScrollView>
+                <ScrollView
+                    style={styles.scrollSection}
+                    contentContainerStyle={styles.scrollContent}
+                >
+                </ScrollView>
             </View>
-          </ScrollView>
-          <ScrollView
-            style={styles.scrollSection}
-            contentContainerStyle={styles.scrollContent}
-          >
-          </ScrollView>
-        </View>
-      </ScrollView>
+        </ScrollView>
     );
 };
 
@@ -267,7 +264,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#f2f2f2",
         paddingHorizontal: 16,
         paddingVertical: 24,
-        top: 20,
+        top: 80,
     },
     middleContent: {
         alignItems: "center",
@@ -335,7 +332,8 @@ const styles = StyleSheet.create({
     photoOptions: {
         flexDirection: "row",
         justifyContent: "center",
-        marginTop: 116,
+        marginTop: 150,
+        top: 70,
         left: 140
     },
     sectionTitle: {
@@ -366,8 +364,8 @@ const styles = StyleSheet.create({
         paddingBottom: 24,
     },
     squareImage: {
-        width: '120%',// Make image width 100% of the container width
-
+        width: '120%',
+        top: 145,
         aspectRatio: 1, // Maintain 1:1 aspect ratio to make it square
         borderRadius: 0, // No border radius to make it square
     },

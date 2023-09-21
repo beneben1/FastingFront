@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Login from "./app/Screens/AUTHscreens/Login";
 import Questions from "./app/Screens/Questions";
 import SignUp from "./app/Screens/AUTHscreens/SignUp";
-import HomeTabs from "./app/Screens/Navigation/HomeTabs";
+import HomeTabs from "./app/Navigation/HomeTabs";
 import Dietplan12 from "./app/Screens/fastinghours/Dietplan12";
 import Dietplan14 from "./app/Screens/fastinghours/Dietplan14";
 import Dietplan16 from "./app/Screens/fastinghours/Dietplan16";
